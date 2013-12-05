@@ -1,35 +1,30 @@
 def check_files
-  @all_files = []
+  all_files = []
   Dir.foreach(Dir.getwd) do |name|
-  @all_files << name
+    all_files << name
   end
+  return all_files
 end
 
-def check_name
-  check_files
-  @py_files = []
-  pos = 0
-  while pos < @all_files.size
-    if @all_files[pos].include?(".py")
-      @py_files << pos
-    end
-    pos += 1
+def check_name(extension = "py")
+  all_files = check_files
+  py_files = []
+
+  check_files.each do |file|
+    py_files << file if file.include?(".#{extension}")
   end
+  return py_files
 end
 
-def destiny_chooser
-  @pos = 0
-  @all_files[@py_files[@pos]]
-  while @pos < @py_files.size
+def destiny_chooser(file_list)
+  file_list.each do |file|
     destiny = Random.rand(1..2)
     if destiny == 1
       puts "erase"
-      erase_file
-      @pos += 1
+      #erase(file)
     else
       puts "change"
-      change_file
-      @pos += 1
+      change(file)
     end
   end
 end
@@ -41,26 +36,43 @@ end
 #end
 
 
-def erase_file
-  File.delete(@all_files[@py_files[@pos]])
+def erase(file)
+  File.delete(file)
 end
 
-def change_file
-  lines = []
-  file = File.open(@all_files[@py_files[@pos]], "r")
-  file.readlines.each do |line|
-    line.split('').each do |line|
-      lines << line
+def rovarize(line)
+  consonant = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"]
+  output = ""
+  line.each_char do |character|
+    if consonant.include?(character.downcase) == true
+      output << "#{character}o#{character.downcase}"
+    else
+      output << character
     end
   end
-  char = 0
-  while char < lines.length
-    if lines[char].include?
-  end
-  p lines
+  return output
 end
 
-check_name
-pirate
-#destiny_chooser
+def change(file)
+  old_lines = File.readlines(file)
+  File.open(file, 'w') do |newfile|
+    old_lines.each do |line|
+      newfile.print rovarize(line)
+    end
+    newfile.print("\n")
+
+
+    #loopa genom old lines
+    #end
+    #rovarize varje line
+    #skriv in varje rovarized line i newfile #newfile.puts rovarize(line)
+    #end
+    #p file
+  end
+end
+
+
+#(Måste ha filer i mappen för att programmet ska funka).fix
+python_files = check_name
+destiny_chooser(python_files)
 
